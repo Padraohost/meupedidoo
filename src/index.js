@@ -1,30 +1,50 @@
-import Grid from "./classes/Grid.js";
-import Obstacle from "./classes/Obstacle.js";
-import Particle from "./classes/Particle.js";
-import Player from "./classes/Player.js";
-import SoundEffects from "./classes/SoundEffects.js";
-import Star from "./classes/Star.js";
-import { GameState, NUMBER_STARS } from "./utils/constants.js";
+const showVictoryScreen = () => {
+    const victoryScreen = document.createElement("div");
+    victoryScreen.className = "victory-screen";
+    victoryScreen.textContent = "Obrigado por ser incrivel amor! TE AMO!!!";
+    document.body.append(victoryScreen);
 
-const soundEffects = new SoundEffects();
+    // Estilo da tela de vitória
+    victoryScreen.style.position = "absolute";
+    victoryScreen.style.top = "50%";
+    victoryScreen.style.left = "50%";
+    victoryScreen.style.transform = "translate(-50%, -50%)";
+    victoryScreen.style.backgroundColor = "white";
+    victoryScreen.style.padding = "20px";
+    victoryScreen.style.border = "2px solid black";
+    victoryScreen.style.borderRadius = "10px";
+    victoryScreen.style.textAlign = "center";
+    victoryScreen.style.fontSize = "24px";
+    victoryScreen.style.fontWeight = "bold";
 
-const startScreen = document.querySelector(".start-screen");
-const gameOverScreen = document.querySelector(".game-over");
-const scoreUi = document.querySelector(".score-ui");
-const scoreElement = scoreUi.querySelector(".score > span");
-const levelElement = scoreUi.querySelector(".level > span");
-const highElement = scoreUi.querySelector(".high > span");
-const buttonPlay = document.querySelector(".button-play");
-const buttonRestart = document.querySelector(".button-restart");
+    // Função para criar os fogos de artifício infinitos
+    createInfiniteFireworks();
 
-gameOverScreen.remove();
+    // Função para criar animação de chuva de corações
+    function createInfiniteFireworks() {
+        const colors = ["red", "green", "blue", "yellow", "purple", "orange"];
 
-const canvas = document.querySelector("canvas");
-const ctx = canvas.getContext("2d");
+        // Criar fogos de artifício infinitamente
+        setInterval(() => {
+            let firework = document.createElement("div");
+            firework.style.position = "absolute";
+            firework.style.top = "-30px"; // Iniciar acima da tela
+            firework.style.left = `${Math.random() * 100}vw`;
+            firework.style.width = "30px";
+            firework.style.height = "30px";
+            firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            firework.style.clipPath = "polygon(50% 0%, 0% 30%, 20% 60%, 50% 45%, 80% 60%, 100% 30%)"; // Forma de coração
+            firework.style.animation = "heart-fall 2s linear infinite"; // Animação contínua de queda
+            firework.style.boxShadow = "0 0 20px 10px rgba(255, 255, 255, 0.8)";
+            document.body.appendChild(firework);
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+            // Remover o coração após a animação
+            firework.addEventListener("animationend", () => {
+                firework.remove();
+            });
+        }, 200); // Criar um novo coração a cada 200ms
 
+<<<<<<< HEAD
 ctx.imageSmoothingEnabled = false;
 
 let currentState = GameState.START;
@@ -138,6 +158,8 @@ const showVictoryScreen = () => {
             });
         }, 200); // Criar um novo coração a cada 200ms
 
+=======
+>>>>>>> 840baef4d6c2cc77a6aab0986d2368e2fcd3642d
         // Estilo da animação para a chuva de corações
         const style = document.createElement("style");
         style.innerHTML = `
@@ -150,6 +172,7 @@ const showVictoryScreen = () => {
                     transform: translateY(100vh) scale(1.5); /* Faz o coração cair até o fundo da tela */
                     opacity: 0;
                 }
+<<<<<<< HEAD
             }
         `;
         document.head.appendChild(style);
@@ -256,115 +279,14 @@ const checkShootInvaders = () => {
                 playerProjectiles.splice(projectileIndex, 1);
 
                 return;
+=======
+>>>>>>> 840baef4d6c2cc77a6aab0986d2368e2fcd3642d
             }
-        });
-    });
-};
-
-const showGameOverScreen = () => {
-    document.body.append(gameOverScreen);
-    gameOverScreen.classList.add("zoom-animation");
-};
-
-const gameOver = () => {
-    createExplosion(
-        {
-            x: player.position.x + player.width / 2,
-            y: player.position.y + player.height / 2,
-        },
-        10,
-        "white"
-    );
-
-    createExplosion(
-        {
-            x: player.position.x + player.width / 2,
-            y: player.position.y + player.height / 2,
-        },
-        5,
-        "#4D9BE6"
-    );
-
-    createExplosion(
-        {
-            x: player.position.x + player.width / 2,
-            y: player.position.y + player.height / 2,
-        },
-        5,
-        "crimson"
-    );
-
-    player.alive = false;
-    currentState = GameState.GAME_OVER;
-    showGameOverScreen();
-};
-
-const checkShootPlayer = () => {
-    invadersProjectiles.some((projectile, index) => {
-        if (player.hit(projectile)) {
-            soundEffects.playExplosionSound();
-            invadersProjectiles.splice(index, 1);
-
-            gameOver();
-        }
-    });
-};
-
-const checkShootObstacles = () => {
-    obstacles.forEach((obstacle) => {
-        playerProjectiles.some((projectile, index) => {
-            if (obstacle.hit(projectile)) {
-                playerProjectiles.splice(index, 1);
-                return;
-            }
-        });
-
-        invadersProjectiles.some((projectile, index) => {
-            if (obstacle.hit(projectile)) {
-                invadersProjectiles.splice(index, 1);
-                return;
-            }
-        });
-    });
-};
-
-const checkInvadersCollidedObstacles = () => {
-    obstacles.forEach((obstacle, i) => {
-        grid.invaders.some((invader) => {
-            if (invader.collided(obstacle)) {
-                obstacles.splice(i, 1);
-            }
-        });
-    });
-};
-
-const checkPlayerCollidedInvaders = () => {
-    grid.invaders.some((invader) => {
-        if (
-            invader.position.x >= player.position.x &&
-            invader.position.x <= player.position.x + player.width &&
-            invader.position.y >= player.position.y
-        ) {
-            gameOver();
-        }
-    });
-};
-
-const spawnGrid = () => {
-    if (grid.invaders.length === 0) {
-        soundEffects.playNextLevelSound();
-
-        grid.rows = Math.round(Math.random() * 9 + 1);
-        grid.cols = Math.round(Math.random() * 9 + 1);
-        grid.restart();
-
-        incrementLevel();
-
-        if (obstacles.length === 0) {
-            initObstacles();
-        }
+        `;
+        document.head.appendChild(style);
     }
 };
+<<<<<<< HEAD
 
 const gameLoop = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -494,3 +416,5 @@ buttonRestart.addEventListener("click", restartGame);
 
 generateStars();
 gameLoop();
+=======
+>>>>>>> 840baef4d6c2cc77a6aab0986d2368e2fcd3642d
